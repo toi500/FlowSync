@@ -1,0 +1,36 @@
+{
+  "name": "flowsync",
+  "version": "1.0.0",
+  "description": "Multi-instance synchronization tool for backing up Flowise chatflows from multiple servers to a Git repository",
+  "main": "sync.js",
+  "scripts": {
+    "start": "node sync.js",
+    "sync": "node sync.js",
+    "test-config": "node test-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toi500/FlowSync.git"
+  },
+  "keywords": [
+    "flowise",
+    "multi-instance",
+    "backup",
+    "sync",
+    "chatflow",
+    "git",
+    "automation"
+  ],
+  "author": "toi500",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/toi500/FlowSync/issues"
+  },
+  "homepage": "https://github.com/toi500/FlowSync#readme",
+  "engines": {
+  "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  }
+}
