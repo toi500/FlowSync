@@ -1,13 +1,12 @@
 # FlowSync – Multi-Instance Flowise Sync & Versioning
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Node.js Version](https://img.shields.io/badge/Node.js-18+-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![Node.js Version](https://img.shields.io/badge/Node.js-18+-blue.svg)
 
 **FlowSync** is a Node.js utility designed to back up and version-control flows from multiple Flowise instances to a remote Git repository. It provides a way for users and teams to keep a versioned history of their flows, synced automatically. The script can be run locally or deployed as a background service using Docker.
 
 ---
 
-## Core Functionality
+# Core Functionality
 
 *   **Maintains API as Source of Truth:** If the backup repository is manually edited, the script will overwrite those changes with the latest data from the Flowise API on the next sync.
 *   **Archives Deleted Flows:** When a flow is deleted in the Flowise UI, its corresponding file is moved to an archive folder (`deleted/`) instead of being permanently removed from the repository.
@@ -27,8 +26,6 @@ The script runs on a set interval and performs the following steps for each sync
     - Deleted flows are moved to `flows/<instance>/<type>/deleted/`.
 5.  **Commits & Pushes:** All changes are committed and pushed to your private remote repository.
 
----
-
 ## Prerequisites
 
 1.  **Node.js v18+**
@@ -37,9 +34,9 @@ The script runs on a set interval and performs the following steps for each sync
 
 ---
 
-## Local Usage
+# Local Usage
 
-### 1. Installation
+## 1. Installation
 
 ```sh
 git clone https://github.com/toi500/FlowSync
@@ -47,7 +44,7 @@ cd FlowSync
 npm install
 ```
 
-### 2. Configuration
+## 2. Configuration
 
 Create a `.env` file in the root of the project. You can copy `.env.example` to get started.
 
@@ -78,24 +75,25 @@ SYNC_INTERVAL_MINUTES=1
 FLOWISE_INSTANCES_JSON='[{"name":"production","url":"https://your-prod-url.com","apiKey":"your-prod-api-key","enabled":true},{"name":"development","url":"http://localhost:3000","apiKey":"your-dev-api-key","enabled":true}]'
 ```
 
-### 3. Running the Sync
+## 3. Running the Sync
 
 ```sh
-npm start```
+npm start
+```
 The script will perform an initial sync and then continue to run in the background, checking for updates periodically.
 
 ---
 
-## Deployment (Docker)
+# Deployment (Docker)
 
 FlowSync is designed to be deployed as a long-running service.
 
-### 1. Build the Docker image:
+## 1. Build the Docker image:
 ```sh
 docker build -t flowsync .
 ```
 
-### 2. Run the Docker container:
+## 2. Run the Docker container:
 Make sure your configured `.env` file is in the current directory.
 ```sh
 docker run -d --name flowsync-service --env-file .env flowsync
@@ -104,7 +102,7 @@ The service will now be running in the background. To view logs, use `docker log
 
 ---
 
-## Repository Structure
+# Repository Structure
 
 After running, your private backup repository will be structured like this. (Note: The script adds a unique ID to each filename to prevent conflicts).
 
@@ -126,6 +124,33 @@ MyFlows/
 
 ---
 
-## License
+# Generating a GitHub Personal Access Token (Classic)
+
+To use this project, you will need a GitHub Personal Access Token (Classic) with `repo` scopes. Follow these steps to create one:
+
+1.  **Navigate and Create a New Token**
+    *   Log in to your GitHub account and go directly to the [**New personal access token (classic)**](https://github.com/settings/tokens/new) page.
+    *   Alternatively, you can navigate manually: Click your **Profile Picture** -> **Settings** -> **Developer settings** -> **Personal access tokens** -> **Tokens (classic)** -> **Generate new token**.
+
+2.  **Configure Token Scopes**
+    *   **Note**: Give your token a descriptive name (e.g., "FlowSync Token").
+    *   **Expiration**: Set an appropriate expiration date. Sync will automatically stop working after this date. If you want Sync to automatically back up your flows without interruption, you'll need to select no expiration.
+    *   **Select scopes**: Check the box next to `repo`.
+
+3.  **Generate and Save the Token**
+    *   Scroll to the bottom and click the **Generate token** button.
+    *   **IMPORTANT**: Your token will be displayed only once. Copy it immediately and store it in a secure place. You will not be able to see it again.
+
+4.  **Use the Token for Git Authentication**
+    *   Use the token in the Git remote URL.
+
+        ```bash
+        GIT_REMOTE_URL='https://<YOUR_GITHUB_TOKEN>@github.com/<your-username>/<your-private-repo>.git'
+        ```
+<img width="1956" height="1346" alt="Image" src="https://github.com/user-attachments/assets/eb75849d-9315-4e3c-983a-68193032e79b" />
+
+---
+
+# License
 
 This project is licensed under the **MIT License**.
