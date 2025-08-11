@@ -55,15 +55,16 @@ cp .env.example .env
 Now, edit the `.env` file with your details:
 
 ```env
+
 # The URL of your PRIVATE Git repository where flows will be saved.
-# Choose one of the formats below.
+# Choose one of the formats below:
 #
-# HTTPS (recommended for services like Coolify/Render):
-# You'll need to create a GitHub Personal Access Token with 'repo' scope.
-GIT_REMOTE_URL='https://<YOUR_GITHUB_TOKEN>@github.com/<your-username>/<your-private-repo>.git'
+# For online/cloud deployment (e.g. Docker, cloud services), use HTTPS with a GitHub Personal Access Token:
+#   GIT_REMOTE_URL='https://<YOUR_GITHUB_TOKEN>@github.com/<your-username>/<your-private-repo>.git'
 #
-# SSH (recommended for local use or servers with SSH keys):
-# GIT_REMOTE_URL='git@github.com:<your-username>/<your-private-repo>.git'
+# For local/server deployments where git is already configured (SSH keys or credential manager), you can use SSH or HTTPS without a token:
+#   GIT_REMOTE_URL='git@github.com:<your-username>/<your-private-repo>.git'
+#   GIT_REMOTE_URL='https://github.com/<your-username>/<your-private-repo>.git'
 
 
 # The interval in minutes for how often to check for flow updates.
@@ -124,9 +125,12 @@ MyFlows/
 
 ---
 
+
 # Generating a GitHub Personal Access Token (Classic)
 
-To use this project, you will need a GitHub Personal Access Token (Classic) with `repo` scopes. Follow these steps to create one:
+**Note:** A GitHub Personal Access Token is only required for online/cloud deployments (e.g., Docker, cloud services) using HTTPS authentication. For local/server deployments where git is already configured (SSH keys or credential manager), you can use SSH or HTTPS without a token.
+
+If you need a token, follow these steps:
 
 1.  **Navigate and Create a New Token**
     *   Log in to your GitHub account and go directly to the [**New personal access token (classic)**](https://github.com/settings/tokens/new) page.
@@ -141,11 +145,19 @@ To use this project, you will need a GitHub Personal Access Token (Classic) with
     *   Scroll to the bottom and click the **Generate token** button.
     *   **IMPORTANT**: Your token will be displayed only once. Copy it immediately and store it in a secure place. You will not be able to see it again.
 
+
 4.  **Use the Token for Git Authentication**
-    *   Use the token in the Git remote URL.
+    *   Use the token in the Git remote URL for online/cloud deployments:
 
         ```bash
         GIT_REMOTE_URL='https://<YOUR_GITHUB_TOKEN>@github.com/<your-username>/<your-private-repo>.git'
+        ```
+
+    *   For local/server deployments, you can use SSH or HTTPS without a token:
+
+        ```bash
+        GIT_REMOTE_URL='git@github.com:<your-username>/<your-private-repo>.git'
+        GIT_REMOTE_URL='https://github.com/<your-username>/<your-private-repo>.git'
         ```
 <img width="1956" height="1346" alt="Image" src="https://github.com/user-attachments/assets/eb75849d-9315-4e3c-983a-68193032e79b" />
 

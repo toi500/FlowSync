@@ -35,16 +35,21 @@ const ensureGitRepo = async () => {
 };
 
 const ensureGitRemote = async () => {
+    const remote = process.env.GIT_REMOTE_URL;
+    if (!remote) {
+        console.warn('  -> No GIT_REMOTE_URL configured. Using existing remote or add one manually.');
+        return;
+    }
+
     try {
-        await runCommand('git remote get-url origin', true);
-    } catch {
-        const remote = process.env.GIT_REMOTE_URL;
-        if (remote) {
-            console.log('  -> Setting git remote origin from GIT_REMOTE_URL');
-            await runCommand(`git remote add origin ${remote}`);
-        } else {
-            console.warn('  -> No git remote configured. Set GIT_REMOTE_URL in your environment or add a remote manually.');
+        const currentRemote = await runCommand('git remote get-url origin', true);
+        if (currentRemote !== remote) {
+            console.log('  -> Updating git remote origin to use GIT_REMOTE_URL');
+            await runCommand(`git remote set-url origin ${remote}`);
         }
+    } catch {
+        console.log('  -> Setting git remote origin from GIT_REMOTE_URL');
+        await runCommand(`git remote add origin ${remote}`);
     }
 };
 
@@ -244,7 +249,7 @@ const syncFlows = async () => {
             console.log("  -> Committing changes...");
             await runCommand('git config --global user.name "FlowSync Bot"');
             await runCommand('git config --global user.email "bot@flowsync.io"');
-            
+
             const filesToAdd = [...allChangedFiles, ...allStateFiles].join(' ');
             if (filesToAdd.trim()) {
                 await runCommand(`git add ${filesToAdd}`);
@@ -254,14 +259,33 @@ const syncFlows = async () => {
             if (allChangedFiles.length > 0) commitParts.push(`${allChangedFiles.length} updated`);
             if (allMovedFiles.length > 0) commitParts.push(`${allMovedFiles.length} archived`);
             const commitMessage = `Sync: ${commitParts.join(', ')} flow(s)`;
-            
+
             await runCommand(`git commit -m "${commitMessage}"`);
-            
+
             console.log("  -> Pushing to remote repository...");
-            await runCommand('git push -u origin main');
-            console.log("  -> Multi-instance sync successful!");
+            try {
+                await runCommand('git push -u origin main', true);
+                console.log("  -> Multi-instance sync successful!");
+            } catch (pushError) {
+                const errorMsg = pushError.message.toLowerCase();
+                if (
+                    errorMsg.includes("origin does not appear to be a git repository") ||
+                    errorMsg.includes("could not read from remote repository") ||
+                    errorMsg.includes("permission denied") ||
+                    errorMsg.includes("denied to") ||
+                    errorMsg.includes("unable to access") ||
+                    errorMsg.includes("error: 403")
+                ) {
+                    console.error("Error: No valid git remote configured or you do not have permission to push. Set GIT_REMOTE_URL in your .env file or add a remote manually.");
+                    console.log("Your flows have still been saved locally and are up to date on your machine.");
+                }
+                // Only show raw error for unexpected push errors
+                else {
+                    console.error(`  -> Git push process failed: ${pushError.message}`);
+                }
+            }
         } catch (error) {
-            console.error(`  -> Git push process failed: ${error.message}`);
+            console.error(`Error: ${error.message}`);
         }
     } else {
         console.log("  -> No changes detected across all instances.");
